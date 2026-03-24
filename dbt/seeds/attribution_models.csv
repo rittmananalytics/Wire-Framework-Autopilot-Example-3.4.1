@@ -1,0 +1,6 @@
+model_name,display_name,description,is_default
+first_touch,First Touch,100% credit to the first marketing touch in the journey,false
+last_touch,Last Touch,100% credit to the last touch before opportunity creation,false
+linear,Linear,Equal credit split across all touches in the 180-day window,false
+time_decay,Time Decay,"Exponential decay with 30-day half-life — more credit to touches closer to opportunity creation",false
+u_shaped,U-Shaped,"40% first touch, 40% lead conversion (SAL/MQL), 20% split across middle touches",true

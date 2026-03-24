@@ -1,0 +1,7 @@
+stage_name,stage_order,stage_display_name,description
+subscriber,1,Subscriber,Contact has opted in to marketing communications
+lead,2,Lead,Contact has shown initial interest (e.g. downloaded content)
+mql,3,MQL,Marketing Qualified Lead — meets lead scoring threshold for handoff review
+sal,4,SAL,Sales Accepted Lead — SDR has accepted and is actively working the lead
+sql,5,SQL,Sales Qualified Lead — SDR has qualified and handed off to AE
+opportunity,6,Opportunity,Salesforce opportunity created — in active sales cycle

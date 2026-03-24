@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: staging
+    database: "{{ var('marketing_project') }}"
+    schema: staging
+    freshness:
+      warn_after: {count: 4, period: hour}
+      error_after: {count: 10, period: hour}
+    loaded_at_field: _fivetran_synced
+
+    tables:
+      - name: stg_linkedin_ads__campaigns
+        description: "LinkedIn Ads campaigns"
+
+      - name: stg_linkedin_ads__creatives
+        description: "LinkedIn Ads creatives with spend data (maps to ad group level)"

@@ -1,0 +1,44 @@
+name: core_dynamics_analytics
+version: '1.0.0'
+config-version: 2
+
+profile: core_dynamics
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  marketing_attribution_window_days: 180
+  u_shaped_first_touch_weight: 0.40
+  u_shaped_lead_conversion_weight: 0.40
+  u_shaped_middle_weight: 0.20
+  time_decay_half_life_days: 30
+  marketing_project: "core-dynamics-analytics-prod"
+
+models:
+  core_dynamics_analytics:
+    staging:
+      +materialized: view
+      +schema: staging
+      +tags: ["staging"]
+    integration:
+      +materialized: view
+      +schema: intermediate
+      +tags: ["integration"]
+    warehouse:
+      core:
+        +materialized: table
+        +schema: mart_marketing
+        +tags: ["warehouse"]
+
+seeds:
+  core_dynamics_analytics:
+    +schema: reference
+
+on-run-start:
+  - "{{ log('Starting dbt run for Core Dynamics Analytics', info=True) }}"

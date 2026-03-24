@@ -1,0 +1,119 @@
+version: 2
+
+models:
+  - name: int__contacts__unified
+    description: >
+      Unified contact master joining HubSpot contacts to Salesforce contacts via email hash match,
+      with company domain fallback for the ~12% of contacts without a clean email match.
+      Includes Clearbit firmographic enrichment. All emails stored as SHA-256 hash — no plain text.
+    columns:
+      - name: contact_pk
+        description: "Primary key: SHA-256 hash of the lowercased email address"
+        tests:
+          - unique
+          - not_null
+      - name: email_pseudonymised
+        description: "SHA-256 hash of the lowercased, trimmed email address — PII-safe identifier"
+        tests:
+          - not_null
+      - name: match_method
+        description: "How this contact was matched to Salesforce: exact_email, email_hash, company_domain, or unmatched"
+        tests:
+          - accepted_values:
+              values: ['exact_email', 'email_hash', 'company_domain', 'unmatched']
+      - name: hubspot_lifecycle_stage
+        description: "Current HubSpot lifecycle stage: subscriber, lead, mql, sal, sql, or opportunity"
+
+  - name: int__marketing_touches__all_channels
+    description: >
+      All marketing touch events unioned from HubSpot (page views, form submissions, email engagements)
+      and Outreach (SDR emails and calls). UTM-less touches are tagged as channel='unattributed' rather
+      than dropped. Outreach touches are tagged as channel='sdr'.
+    columns:
+      - name: touch_pk
+        description: "Primary key: surrogate key from contact_pk + touch_ts + touch_type + source_system"
+        tests:
+          - unique
+          - not_null
+      - name: contact_pk
+        description: "Foreign key to int__contacts__unified"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('int__contacts__unified')
+              field: contact_pk
+      - name: touch_type
+        description: "Type of engagement event"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [page_view, form_submit, email_open, email_click, outreach_email, outreach_call, ad_click]
+      - name: channel
+        description: "Marketing channel assigned from UTM parameters or source system"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [paid_search, paid_social, content, email, sdr, organic, unattributed]
+
+  - name: int__campaign_spend__normalised
+    description: >
+      Daily advertising spend from Google Ads, LinkedIn Ads, and Meta Ads normalised to
+      a consistent schema at the campaign/ad-group level. LinkedIn creative-level data
+      is mapped to campaign level. Meta campaign_type is derived from ad set naming conventions.
+    columns:
+      - name: spend_pk
+        description: "Primary key: surrogate from platform + campaign_id + ad_group_id + spend_date"
+        tests:
+          - unique
+          - not_null
+      - name: spend_usd
+        description: "Spend in US dollars for this campaign/ad-group/date combination"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+  - name: int__funnel_events__staged
+    description: >
+      HubSpot lifecycle stage transitions extracted as individual stage entry events.
+      One row per contact per funnel stage (subscriber through sql). Stage timestamps
+      sourced from native HubSpot fields (became_mql_date, became_sal_date, etc.).
+    columns:
+      - name: funnel_event_pk
+        description: "Primary key: SHA-256(contact_pk + stage_name)"
+        tests:
+          - unique
+          - not_null
+      - name: stage_name
+        description: "Funnel stage name"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [subscriber, lead, mql, sal, sql, opportunity]
+      - name: stage_order
+        description: "Numeric position in the funnel (1=subscriber through 6=opportunity)"
+        tests:
+          - not_null
+
+  - name: int__opportunities__attributed
+    description: >
+      Opportunities joined to all qualifying marketing touches within the 180-day influence window.
+      One row per opportunity × touch. Includes attribution helper flags (is_first_touch,
+      is_last_touch, is_lead_conversion_touch, is_middle_touch) and marketing-sourced/influenced flags.
+    columns:
+      - name: opportunity_pk
+        description: "Salesforce opportunity primary key"
+        tests:
+          - not_null
+      - name: touch_pk
+        description: "Foreign key to int__marketing_touches__all_channels"
+        tests:
+          - not_null
+      - name: days_before_opportunity
+        description: "Number of days between the touch and opportunity creation (must be 0-180)"
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+          - dbt_utils.expression_is_true:
+              expression: "<= 180"
