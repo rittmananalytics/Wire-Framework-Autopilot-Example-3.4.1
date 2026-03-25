@@ -1,0 +1,27 @@
+event_name,feature_id,feature_name,feature_group_id,feature_group_name,module_id,module_name,source_system_authoritative
+work_order_created,feat_001,Create Work Order,fg_001,Work Order Management,mod_001,Maintenance Management,segment
+work_order_updated,feat_002,Update Work Order,fg_001,Work Order Management,mod_001,Maintenance Management,segment
+work_order_closed,feat_003,Close Work Order,fg_001,Work Order Management,mod_001,Maintenance Management,segment
+work_order_assigned,feat_004,Assign Work Order,fg_001,Work Order Management,mod_001,Maintenance Management,segment
+work_order_recurring_created,feat_005,Create Recurring Work Order,fg_001,Work Order Management,mod_001,Maintenance Management,mixpanel
+asset_created,feat_006,Create Asset,fg_002,Asset Management,mod_002,Asset Management,segment
+asset_updated,feat_007,Update Asset,fg_002,Asset Management,mod_002,Asset Management,segment
+asset_status_changed,feat_008,Update Asset Status,fg_002,Asset Management,mod_002,Asset Management,segment
+asset_bulk_imported,feat_009,Bulk Import Assets,fg_002,Asset Management,mod_002,Asset Management,segment
+asset_history_viewed,feat_010,View Asset History,fg_002,Asset Management,mod_002,Asset Management,mixpanel
+asset_qr_scanned,feat_011,QR Asset Scan,fg_002,Asset Management,mod_002,Asset Management,mixpanel
+report_generated,feat_012,Generate Report,fg_003,Reporting,mod_003,Reporting,segment
+report_scheduled,feat_013,Schedule Report,fg_003,Reporting,mod_003,Reporting,mixpanel
+dashboard_viewed,feat_014,View Dashboard,fg_003,Reporting,mod_003,Reporting,mixpanel
+report_exported,feat_015,Export Report,fg_003,Reporting,mod_003,Reporting,mixpanel
+iot_device_connected,feat_016,Connect IoT Device,fg_004,IoT Integration,mod_004,Integrations,mixpanel
+iot_sensor_configured,feat_017,Configure Sensor,fg_004,IoT Integration,mod_004,Integrations,mixpanel
+api_key_created,feat_018,Create API Key,fg_005,API Access,mod_004,Integrations,mixpanel
+workflow_created,feat_019,Create Workflow,fg_006,Workflow Automation,mod_005,Automation,mixpanel
+workflow_triggered,feat_020,Trigger Workflow,fg_006,Workflow Automation,mod_005,Automation,mixpanel
+mobile_work_order_opened,feat_021,Open Work Order Mobile,fg_007,Mobile App,mod_006,Mobile,mixpanel
+mobile_asset_scanned,feat_022,Scan Asset Mobile,fg_007,Mobile App,mod_006,Mobile,mixpanel
+mobile_photo_attached,feat_023,Attach Photo Mobile,fg_007,Mobile App,mod_006,Mobile,mixpanel
+user_invited,feat_024,Invite User,fg_008,User Management,mod_007,Administration,segment
+role_assigned,feat_025,Assign Role,fg_008,User Management,mod_007,Administration,segment
+PLACEHOLDER_UNMAPPED,feat_999,Unmapped Event,fg_999,Unmapped,mod_999,Other,mixpanel

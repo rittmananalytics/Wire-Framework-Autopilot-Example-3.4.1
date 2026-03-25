@@ -1,0 +1,5 @@
+threshold_name,threshold_value,label,color_hex
+at_risk_max,39,At Risk,#E53E3E
+needs_attention_max,59,Needs Attention,#DD6B20
+healthy_max,79,Healthy,#38A169
+excellent_min,80,Excellent,#2B6CB0
