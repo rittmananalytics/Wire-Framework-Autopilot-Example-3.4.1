@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: staging
+    database: "{{ var('marketing_project') }}"
+    schema: staging
+    freshness:
+      warn_after: {count: 4, period: hour}
+      error_after: {count: 10, period: hour}
+    loaded_at_field: _fivetran_synced
+
+    tables:
+      - name: stg_meta_ads__campaigns
+        description: "Meta Ads campaigns"
+
+      - name: stg_meta_ads__ad_sets
+        description: "Meta Ads ad sets with daily spend data"

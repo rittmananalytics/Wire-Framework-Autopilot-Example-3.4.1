@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: int__feature_usage
+    description: "Unified feature events from Segment and Mixpanel with deduplication and 3-level feature taxonomy applied."
+    config:
+      tags: ["integration", "intermediate_product"]
+    columns:
+      - name: event_pk
+        tests:
+          - unique
+          - not_null
+      - name: user_pk
+        tests:
+          - not_null
+      - name: account_pk
+        tests:
+          - not_null
+      - name: feature_id
+        tests:
+          - not_null
+      - name: source_system
+        tests:
+          - accepted_values:
+              values: ["segment", "mixpanel"]
+
+  - name: int__account_sessions
+    description: "Session records from Segment linked to CoreFM accounts."
+    config:
+      tags: ["integration", "intermediate_product"]
+    columns:
+      - name: session_pk
+        tests:
+          - unique
+          - not_null
+      - name: account_pk
+        tests:
+          - not_null
+
+  - name: int__onboarding
+    description: "Onboarding step completions per account from Intercom, with stalled flags."
+    config:
+      tags: ["integration", "intermediate_product"]
+    columns:
+      - name: onboarding_pk
+        tests:
+          - unique
+          - not_null
+      - name: account_pk
+        tests:
+          - not_null
+      - name: step_id
+        tests:
+          - not_null

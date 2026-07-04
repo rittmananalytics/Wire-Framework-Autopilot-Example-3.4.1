@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: staging
+    database: "{{ var('marketing_project') }}"
+    schema: staging
+    freshness:
+      warn_after: {count: 4, period: hour}
+      error_after: {count: 10, period: hour}
+    loaded_at_field: _fivetran_synced
+
+    tables:
+      - name: stg_google_ads__campaigns
+        description: "Google Ads campaigns"
+
+      - name: stg_google_ads__ad_groups
+        description: "Google Ads ad groups with daily spend, impressions, clicks"

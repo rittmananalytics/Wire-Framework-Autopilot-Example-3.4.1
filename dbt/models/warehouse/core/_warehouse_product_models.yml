@@ -1,0 +1,172 @@
+version: 2
+
+models:
+  - name: fct_feature_usage
+    description: "Deduplicated product feature usage events with 3-level taxonomy (module, feature group, feature). Segment authoritative for transactional events; Mixpanel for discovery events."
+    config:
+      tags: ["warehouse", "warehouse_product"]
+    columns:
+      - name: event_pk
+        description: "Surrogate key: SHA-256(source_system + event_id)"
+        tests:
+          - unique
+          - not_null
+      - name: user_pk
+        description: "SHA-256 pseudonymised user identifier"
+        tests:
+          - not_null
+          - assert_user_id_is_hashed
+      - name: account_pk
+        description: "Foreign key to dim_account"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_account')
+              field: account_pk
+      - name: feature_id
+        description: "Feature identifier from feature_taxonomy seed"
+        tests:
+          - not_null
+      - name: module_id
+        description: "Top-level module identifier (e.g., Maintenance Management)"
+        tests:
+          - not_null
+      - name: event_date
+        description: "Partition column — date of event"
+        tests:
+          - not_null
+      - name: source_system
+        description: "Authoritative source: segment or mixpanel"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["segment", "mixpanel"]
+
+  - name: fct_session_events
+    description: "Session records per user per account, sourced from Segment."
+    config:
+      tags: ["warehouse", "warehouse_product"]
+    columns:
+      - name: session_pk
+        description: "Surrogate key: SHA-256(session_id)"
+        tests:
+          - unique
+          - not_null
+      - name: user_pk
+        description: "SHA-256 pseudonymised user identifier"
+        tests:
+          - not_null
+      - name: account_pk
+        description: "Foreign key to dim_account"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_account')
+              field: account_pk
+      - name: session_date
+        tests:
+          - not_null
+
+  - name: fct_onboarding_funnel
+    description: "Onboarding step completion per account — 7 steps (5 core, 2 extended). Stalled flag set when step not complete after 14+ days."
+    config:
+      tags: ["warehouse", "warehouse_product"]
+    columns:
+      - name: onboarding_pk
+        description: "Surrogate key: SHA-256(account_pk + step_id)"
+        tests:
+          - unique
+          - not_null
+      - name: account_pk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_account')
+              field: account_pk
+      - name: step_id
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - onboarding_invite_users
+                - onboarding_create_first_asset
+                - onboarding_import_asset_list
+                - onboarding_create_work_order
+                - onboarding_configure_report
+                - onboarding_integrate_iot
+                - onboarding_qbr_ready
+      - name: is_stalled
+        tests:
+          - not_null
+
+  - name: fct_workflow_completion
+    description: "Workflow completion events from Mixpanel. One row per completed workflow per user."
+    config:
+      tags: ["warehouse", "warehouse_product"]
+    columns:
+      - name: workflow_pk
+        tests:
+          - unique
+          - not_null
+      - name: account_pk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_account')
+              field: account_pk
+
+  - name: dim_account
+    description: "Account dimension: one row per active customer account. Shared by product analytics and customer analytics (Release 05). account_pk = SHA-256(salesforce_account_id)."
+    config:
+      tags: ["warehouse", "warehouse_product"]
+    columns:
+      - name: account_pk
+        description: "Surrogate key: SHA-256(salesforce_account_id). Consistent across releases."
+        tests:
+          - unique
+          - not_null
+      - name: salesforce_account_id
+        tests:
+          - unique
+          - not_null
+      - name: account_name
+        tests:
+          - not_null
+      - name: segment
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["Enterprise", "Mid-Market", "SMB", "Strategic"]
+      - name: contracted_user_seats
+        description: "From Salesforce Contract.User_Seats__c. NULL if not on file for older contracts."
+
+  - name: dim_account_product_score
+    description: "Monthly product engagement score (0–100) per account. 7 weighted signals. Historical monthly scores retained for trending. Full table rebuild monthly."
+    config:
+      tags: ["warehouse", "warehouse_product"]
+    columns:
+      - name: score_pk
+        description: "Surrogate key: SHA-256(account_pk + score_month)"
+        tests:
+          - unique
+          - not_null
+      - name: account_pk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_account')
+              field: account_pk
+      - name: score_month
+        tests:
+          - not_null
+      - name: product_engagement_score
+        description: "Composite score 0–100. Weights configurable via dbt vars."
+        tests:
+          - not_null
+          - assert_score_in_range:
+              min_value: 0
+              max_value: 100
+      - name: work_order_within_30_days
+        description: "Binary signal: TRUE if first work order created within 30 days of contract start. High churn predictor per Claire Ashworth."
+        tests:
+          - not_null

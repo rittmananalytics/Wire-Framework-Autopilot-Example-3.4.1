@@ -1,0 +1,8 @@
+step_id,step_name,step_order,is_core_step,target_days_min,target_days_max,description
+onboarding_invite_users,Invite Users,1,true,1,3,Admin invites at least 3 users
+onboarding_create_first_asset,Create First Asset,2,true,1,7,At least one asset record created
+onboarding_import_asset_list,Import Asset List,3,true,3,14,Asset bulk import completed (10+ assets)
+onboarding_create_work_order,Create Work Order,4,true,7,21,First work order created and assigned
+onboarding_configure_report,Configure Report,5,true,14,30,First scheduled report configured
+onboarding_integrate_iot,Integrate IoT,6,false,30,90,First IoT device or sensor connected (optional)
+onboarding_qbr_ready,QBR Ready,7,false,60,90,Account manager marks account as QBR-ready

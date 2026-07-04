@@ -1,0 +1,33 @@
+version: 2
+
+sources:
+  - name: staging
+    database: "{{ var('marketing_project') }}"
+    schema: staging
+    description: "Staging layer from 02-data-foundation — pre-cleaned source models"
+    freshness:
+      warn_after: {count: 8, period: hour}
+      error_after: {count: 12, period: hour}
+    loaded_at_field: _fivetran_synced
+
+    tables:
+      - name: stg_hubspot__contacts
+        description: "HubSpot contacts with lifecycle stage timestamps"
+
+      - name: stg_hubspot__form_submissions
+        description: "HubSpot form submission events"
+
+      - name: stg_hubspot__email_sends
+        description: "HubSpot email send and engagement events"
+
+      - name: stg_hubspot__page_views
+        description: "HubSpot page view tracking events"
+
+  - name: raw_hubspot
+    database: "{{ var('marketing_project') }}"
+    schema: raw_hubspot
+    description: "Raw HubSpot data including Clearbit enrichment output"
+
+    tables:
+      - name: clearbit_enrichment
+        description: "Clearbit firmographic enrichment written by Cloud Function on contact creation"
