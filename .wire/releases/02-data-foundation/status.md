@@ -66,4 +66,11 @@ deployment:
   reviewed_by: "Wire Autopilot (self-review)"
   reviewed_date: 2026-03-24
   file: "deploy/deployment_runbook.md"
+
+kickoff_deck:
+  generate: "complete"
+  validate: "not_started"
+  review: "not_started"
+  file: "artifacts/kickoff-deck.html"
+  generated_date: "2026-04-30"
 ```

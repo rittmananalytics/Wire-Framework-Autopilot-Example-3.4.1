@@ -82,3 +82,6 @@ Design, build, and deliver a unified data platform on Google Cloud (BigQuery, Da
 - GDPR/CCPA compliance review or legal sign-off
 - Mobile or embedded analytics
 - Ongoing managed service post-engagement
+
+## Artifacts
+- **kickoff_deck**: generated 2026-04-30 — `.wire/kickoff-deck.html`
